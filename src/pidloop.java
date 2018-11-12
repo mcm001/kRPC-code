@@ -1,15 +1,3 @@
-import krpc.client.Connection;
-import krpc.client.Event;
-import krpc.client.RPCException;
-import krpc.client.StreamException;
-import krpc.client.services.KRPC;
-import krpc.client.services.KRPC.Expression;
-import krpc.client.services.SpaceCenter;
-import krpc.client.services.SpaceCenter.Flight;
-import krpc.client.services.SpaceCenter.Node;
-import krpc.client.services.SpaceCenter.Resources;
-import krpc.schema.KRPC.ProcedureCall;
-
 public class pidloop {
 	
 	// initiate the PID variables
@@ -19,19 +7,22 @@ public class pidloop {
 	public long sample_time;
 	public long current_time;
 	public long last_time; 
-	public long now;
-	public long delta_time;
-	public double error;
+	public double P = 0;
+	public double I = 0;
+	public double D = 0;
+	public double clamp_I;
+	public double SetPoint;
+	public double last_measure;
+			
 	
 	// initiate function
 	public void init( double p, double i, double d) {
 		kp = p;
 		ki = i;
 		kd = d;
+		last_measure = 0.0;
 		
-		p = 0;
-		i = 0;
-		d = 0;
+		clamp_I = 1.0;
 			
 		sample_time = 0;
 		current_time = System.currentTimeMillis() / 1000l;
@@ -39,16 +30,40 @@ public class pidloop {
 	    System.out.print("Current time: " + current_time + "\nSample time: " + sample_time);
 	}
 	
-	public void update( double measure) {
-		now = System.currentTimeMillis() / 1000l;
-		delta_time = now - last_time;
+	public double clamp_I_term(double I) {
+		
+		if (I > clamp_I) { return clamp_I; }
+		else if (I < (-1)*clamp_I) { return (-1)*clamp_I; }
+		else { return I; }
+		
+	}
+	
+	public double setpoint(double value) {
+		SetPoint = value;
+		I = 0.1;
+	}
+	
+	public double update( double measure, double setpoint) {
+		long now = System.currentTimeMillis() / 1000l;
+		long delta_time = now - last_time;
 		if ( now - last_time == 0 ) {
 			delta_time = 0;
 		}
 		
+		double error = setpoint - measure;
 		
+		P = error;
+		I += error;
+		I = clamp_I_term(I);
+		D = ( measure - last_measure) / delta_time;
+		
+		last_measure = measure;
+		last_time = now;
+		
+		return (kp * P) + (ki * I) + (kd * D); //update PID
 		
 	}
+	
 	
 	
 	
