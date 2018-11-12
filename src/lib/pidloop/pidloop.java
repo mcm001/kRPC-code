@@ -1,3 +1,4 @@
+package lib.pidloop;
 public class pidloop {
 	
 	// initiate the PID variables
@@ -38,7 +39,7 @@ public class pidloop {
 		
 	}
 	
-	public double setpoint(double value) {
+	public void setpoint(double value) {
 		SetPoint = value;
 		I = 0.1;
 	}

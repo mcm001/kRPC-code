@@ -3,5 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/matth/Documents/GitHub/kRPC-code/src/krpc-java-0.4.8.jar"/>
+	<classpathentry kind="lib" path="src/dependencies/javatuples-1.2.jar"/>
+	<classpathentry kind="lib" path="src/dependencies/protobuf-java-3.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
